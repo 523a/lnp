@@ -1,0 +1,14 @@
+# Used by pip to install required python packages
+# Usage: pip3 install -r requirements.txt
+
+Flask>=1.0.0
+torch==1.8.1+cpu torchvision==0.9.1+cpu torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+huggingface transformers 
+hydra-core
+omegaconfmc
+fairseq
+numpy
+more-itertools
+nltk
+
+
