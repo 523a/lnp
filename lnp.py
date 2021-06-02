@@ -4,13 +4,11 @@ import itertools
 import torch
 from nltk.tokenize import sent_tokenize
 from flask import Flask, render_template, request
-#from fairseq.data.data_utils import collate_tokens
 
-#roberta = torch.hub.load("pytorch/fairseq", "roberta.large")
 roberta = torch.hub.load('pytorch/fairseq', 'roberta.large.mnli')
 roberta.eval()
 from fairseq.data.data_utils import collate_tokens
-
+fillchar="_"
 
 
 
@@ -26,12 +24,11 @@ def get_bot_response():
     userText = request.args.get('msg')
     #формироывние таблицы    
     userText = userText.replace('\n',' ').replace('\t','').replace('\xa0','')#.replace(',','')
-    tokText=sent_tokenize(userText, language="russian")
-    batch_of_pairs= list(itertools.combinations(tokText,2))
+    tokenText=sent_tokenize(userText, language="russian")
+    sizetoken = len(tokenText)
+    batch_of_pairs= list(itertools.combinations(tokenText,2))
     
-    # roberta = torch.hub.load("pytorch/fairseq", "roberta.large")
-    # roberta = torch.hub.load('pytorch/fairseq', 'roberta.large.mnli')
-    # roberta.eval()
+    
     device = "cuda" if torch.cuda.is_available() else "cpu"
     roberta.to(device)
     
@@ -43,8 +40,8 @@ def get_bot_response():
 
     #вывод таблицы
     outp=[]
-    for i in range(21):
-          outp.append( '|'+batch_of_pairs[i][0][:50]+'|'+batch_of_pairs[i][1][:50]+'|'+str(resh[i])+'|'+'\n')
+    for i in range(int((sizetoken*(sizetoken-1))/2)):
+          outp.append( '|'+batch_of_pairs[i][0].ljust(50,fillchar)[:50]+'|'+batch_of_pairs[i][1].ljust(50,fillchar)[:50]+'|'+str(resh[i])+'|'+'\n')
           
     out = ''.join(outp)
     return (out[1:])
